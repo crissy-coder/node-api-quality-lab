@@ -1,0 +1,29 @@
+{
+  "name": "api-quality-lab",
+  "version": "1.0.0",
+  "description": "A Node.js and Express REST API focused on secure coding, request validation, automated testing, error handling, and code quality.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "jest --runInBand"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crissy-coder/node-api-quality-lab.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/crissy-coder/node-api-quality-lab/issues"
+  },
+  "homepage": "https://github.com/crissy-coder/node-api-quality-lab#readme",
+  "dependencies": {
+    "express": "^5.3.0"
+  },
+  "devDependencies": {
+    "jest": "^30.5.2",
+    "supertest": "^7.3.1"
+  }
+}
