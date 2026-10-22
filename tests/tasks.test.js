@@ -20,6 +20,26 @@ describe("Task input validation", () => {
     expect(response.status).toBe(400);
   });
 
+  
+  test.each(["0x1", "1e0", "1.0", "+1", "0", "-1", "01", " 1"])(
+    "rejects non-canonical task ID: %s",
+    async (id) => {
+      const response = await request(app).get(`/api/tasks/${encodeURIComponent(id)}`);
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe("Invalid task ID");
+    }
+  );
+
+  test("rejects unsafe integer task IDs", async () => {
+    const response = await request(app).get(
+      "/api/tasks/9007199254740992"
+    );
+
+    expect(response.status).toBe(400);
+  });
+
+
   test("rejects an empty title", async () => {
     const response = await request(app)
       .post("/api/tasks")

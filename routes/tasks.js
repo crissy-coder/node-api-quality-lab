@@ -6,16 +6,29 @@ const router = express.Router();
 let tasks = [];
 let nextId = 1;
 
+
+function parseTaskId(value) {
+  if (typeof value !== "string" || !/^[1-9]\d*$/.test(value)) {
+    return null;
+  }
+
+  const id = Number(value);
+
+  return Number.isSafeInteger(id) ? id : null;
+}
+
+
 router.get("/", (req, res) => {
   res.json(tasks);
 });
 
 router.get("/:id", (req, res) => {
-  const id = Number(req.params.id);
+ 
+const id = parseTaskId(req.params.id);
 
-  if (!Number.isInteger(id) || id <= 0) {
-    return res.status(400).json({ error: "Invalid task ID" });
-  }
+if (id === null) {
+  return res.status(400).json({ error: "Invalid task ID" });
+}
 
   const task = tasks.find((item) => item.id === id);
 
@@ -47,9 +60,9 @@ router.post("/", (req, res) => {
 });
 
 router.put("/:id", (req, res) => {
-  const id = Number(req.params.id);
+  const id = parseTaskId(req.params.id);
 
-  if (!Number.isInteger(id) || id <= 0) {
+  if (id === null) {
     return res.status(400).json({ error: "Invalid task ID" });
   }
 
@@ -81,9 +94,9 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  const id = Number(req.params.id);
+  const id = parseTaskId(req.params.id);
 
-  if (!Number.isInteger(id) || id <= 0) {
+  if (id === null) {
     return res.status(400).json({ error: "Invalid task ID" });
   }
 
