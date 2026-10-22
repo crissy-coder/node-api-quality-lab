@@ -6,62 +6,112 @@ const router = express.Router();
 let tasks = [];
 let nextId = 1;
 
-// Get all tasks
+
+function parseTaskId(value) {
+    if (typeof value !== "string" || !/^[1-9]\d*$/.test(value)) {
+        return null;
+    }
+
+    const id = Number(value);
+
+    return Number.isSafeInteger(id) ? id : null;
+}
+
+
 router.get("/", (req, res) => {
-  res.json(tasks);
+  res.status(200).json(tasks);
 });
 
-// Get a task by ID
+
 router.get("/:id", (req, res) => {
-  const task = tasks.find((item) => item.id === Number(req.params.id));
+    const id = parseTaskId(req.params.id);
 
-  if (!task) {
-    return res.status(404).json({ error: "Task not found" });
-  }
+    if (id === null) {
+        return res.status(400).json({ error: "Invalid task ID" });
+    }
 
-  res.json(task);
+    const task = tasks.find((item) => item.id === id);
+
+    if (!task) {
+        return res.status(404).json({ error: "Task not found" });
+    }
+
+    res.json(task);
 });
 
-// Create a task
+
 router.post("/", (req, res) => {
-  const task = {
-    id: nextId++,
-    title: req.body.title,
-    completed: false,
-  };
+    const { title } = req.body ?? {};
 
-  tasks.push(task);
+    if (typeof title !== "string" || !title.trim()) {
+        return res.status(400).json({
+            error: "Title is required and must be a non-empty string",
+        });
+    }
 
-  res.status(201).json(task);
+    const task = {
+        id: nextId++,
+        title: title.trim(),
+        completed: false,
+    };
+
+    tasks.push(task);
+
+    res.status(201).json(task);
 });
 
-// Update a task
 router.put("/:id", (req, res) => {
-  const task = tasks.find((item) => item.id === Number(req.params.id));
+    const id = parseTaskId(req.params.id);
 
-  if (!task) {
-    return res.status(404).json({ error: "Task not found" });
-  }
+    if (id === null) {
+        return res.status(400).json({ error: "Invalid task ID" });
+    }
 
-  task.title = req.body.title ?? task.title;
-  task.completed = req.body.completed ?? task.completed;
+    const task = tasks.find((item) => item.id === id);
 
-  res.json(task);
+    if (!task) {
+        return res.status(404).json({ error: "Task not found" });
+    }
+
+    const { title, completed } = req.body ?? {};
+
+    if (
+        title !== undefined &&
+        (typeof title !== "string" || !title.trim())
+    ) {
+        return res.status(400).json({
+            error: "Title must be a non-empty string",
+        });
+    }
+
+    if (completed !== undefined && typeof completed !== "boolean") {
+        return res.status(400).json({
+            error: "Completed must be a boolean",
+        });
+    }
+
+    if (title !== undefined) task.title = title.trim();
+    if (completed !== undefined) task.completed = completed;
+
+    res.json(task);
 });
 
-// Delete a task
 router.delete("/:id", (req, res) => {
-  const index = tasks.findIndex(
-    (item) => item.id === Number(req.params.id)
-  );
+    const id = parseTaskId(req.params.id);
 
-  if (index === -1) {
-    return res.status(404).json({ error: "Task not found" });
-  }
+    if (id === null) {
+        return res.status(400).json({ error: "Invalid task ID" });
+    }
 
-  tasks.splice(index, 1);
+    const index = tasks.findIndex((item) => item.id === id);
 
-  res.status(204).send();
+    if (index === -1) {
+        return res.status(404).json({ error: "Task not found" });
+    }
+
+    tasks.splice(index, 1);
+
+    res.status(204).send();
 });
 
 module.exports = router;
