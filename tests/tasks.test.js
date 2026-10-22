@@ -20,7 +20,13 @@ describe("Task input validation", () => {
     expect(response.status).toBe(400);
   });
 
-  
+  test("returns all tasks", async () => {
+  const response = await request(app).get("/api/tasks");
+
+  expect(response.status).toBe(200);
+  expect(Array.isArray(response.body)).toBe(true);
+});
+ 
 test.each(["get", "put", "delete"])(
   "%s rejects non-canonical task IDs",
   async (method) => {

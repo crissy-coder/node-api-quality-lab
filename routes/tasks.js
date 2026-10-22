@@ -18,9 +18,9 @@ function parseTaskId(value) {
 }
 
 
-// router.get("/", (req, res) => {
-//   res.json(tasks);
-// });
+router.get("/", (req, res) => {
+  res.status(200).json(tasks);
+});
 
 
 router.get("/:id", (req, res) => {
